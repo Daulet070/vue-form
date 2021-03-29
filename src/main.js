@@ -1,6 +1,8 @@
 import Vue from "vue";
-import App from "./App.vue";
+import Vueledate from "vuelidate";
 
+import App from "./App.vue";
+Vue.use(Vueledate);
 Vue.config.productionTip = false;
 
 new Vue({
