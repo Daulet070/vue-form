@@ -1,84 +1,107 @@
 <template>
   <div id="app">
-    <form>
+    <form @submit.prevent="checkForm">
       <h1>Заполните форму</h1>
       <p><i>*</i> Поле обязательное для заполнения.</p>
       <div class="form-segments">
         <div class="segment">
           <h3>Ваши данные:</h3>
-          <label :class="{ 'error-item': $v.lastName.$error }">
+          <label :class="{ 'error-item': $v.form.lastName.$error }">
             <span>Фамилия<i>*</i></span>
             <input
               type="text"
               name="lastName"
-              v-model.trim="lastName"
-              @change="$v.lastName.$touch()"
-              :class="{ 'name-error': $v.lastName.$error }"
+              v-model.trim="form.lastName"
+              :class="{ 'name-error': $v.form.lastName.$error }"
             />
-            <div class="error" v-if="!$v.lastName.required">
+            <div class="error" v-if="!$v.form.lastName.required">
               Поле, обязательное для заполнения
             </div>
+            <div class="error" v-if="!$v.form.lastName.minLength">
+              Должно быть больше двух символов
+            </div>
           </label>
-          <label :class="{ 'error-item': $v.firstName.$error }">
+          <label :class="{ 'error-item': $v.form.firstName.$error }">
             <span>Имя<i>*</i></span>
             <input
               type="text"
               name="firstName"
-              v-model="firstName"
-              @change="$v.firstName.$touch()"
-              :class="{ 'name-error': $v.firstName.$error }"
+              v-model.trim="form.firstName"
+              :class="{ 'name-error': $v.form.firstName.$error }"
             />
-            <div class="error" v-if="!$v.firstName.required">
+            <div class="error" v-if="!$v.form.firstName.required">
               Поле, обязательное для заполнения
+            </div>
+            <div class="error" v-if="!$v.form.firstName.minLength">
+              Должно быть больше двух символов
             </div>
           </label>
           <label>
             <span>Отчество</span>
-            <input type="text" name="middleName" />
+            <input
+              type="text"
+              name="middleName"
+              v-model.trim="form.middleName"
+            />
+            <div class="error" v-if="!$v.form.middleName.minLength">
+              Должно быть больше двух символов
+            </div>
           </label>
-          <label :class="{ 'error-item': $v.date.$error }">
+          <label :class="{ 'error-item': $v.form.date.$error }">
             <span>Дата рождения<i>*</i></span>
             <input
               type="date"
               name="birthday"
-              v-model="date"
-              @change="$v.date.$touch()"
-              :class="{ 'name-error': $v.date.$error }"
+              v-model="form.date"
+              :class="{ 'name-error': $v.form.date.$error }"
             />
-            <div class="error" v-if="!$v.date.required">
+            <div class="error" v-if="!$v.form.date.required">
               Поле, обязательное для заполнения
             </div>
           </label>
-          <label :class="{ 'error-item': $v.telephone.$error }">
+          <label :class="{ 'error-item': $v.form.telephone.$error }">
             <span>Номер телефона<i>*</i></span>
             <input
               type="text"
               name="telephone"
-              v-model="telephone"
-              @change="$v.telephone.$touch()"
-              :class="{ 'name-error': $v.telephone.$error }"
+              v-model="form.telephone"
+              :class="{ 'name-error': $v.form.telephone.$error }"
             />
-            <div class="error" v-if="!$v.telephone.required">
+            <div class="error" v-if="!$v.form.telephone.required">
               Поле, обязательное для заполнения
             </div>
           </label>
           <label class="client-gender">
             <span>Пол</span>
-            <select name="gender" id="gender">
-              <option value="male">Мужской</option>
-              <option value="female">Женский</option>
+            <select name="gender" id="gender" v-model="form.gender">
+              <option
+                v-for="(gender, index) in genders"
+                :value="gender.value"
+                :key="index"
+              >
+                {{ gender.label }}
+              </option>
             </select>
           </label>
           <label class="client-group">
             <span>Группа клиентов<i>*</i></span>
-            <select name="clientType" id="2" multiple>
-              <option value="vip">VIP</option>
-              <option value="trable">Проблемные</option>
-              <option value="oms">ОМС</option>
+            <select
+              name="clientType"
+              id="clientType"
+              v-model="form.selectedClientsTypes"
+              multiple
+            >
+              <option
+                v-for="(clientType, index) in form.clientsType"
+                :value="clientType.value"
+                :key="index"
+              >
+                {{ clientType.label }}
+              </option>
             </select>
           </label>
           <label class="checkbox">
-            <input type="checkbox" />
+            <input type="checkbox" v-model="form.agreeWithSentSMS" />
             <span>Не отправлять СМС</span>
           </label>
         </div>
@@ -137,7 +160,7 @@
           </label>
         </div>
       </div>
-      <button class="red" type="button">Отправить</button>
+      <button class="red" type="submit">Отправить</button>
     </form>
   </div>
 </template>
@@ -147,44 +170,72 @@ import { required, minLength } from "vuelidate/lib/validators";
 export default {
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      middleName: "",
-      date: "",
-      telephone: 7,
-      gender: [
+      form: {
+        firstName: "",
+        lastName: "",
+        middleName: "",
+        date: "",
+        telephone: 7,
+        gender: "Male",
+        selectedClientsTypes: ["VIP"],
+        agreeWithSentSMS: false,
+      },
+      genders: [
         {
           label: "Мужской",
-          value: "male",
+          value: "Male",
         },
         {
           label: "Женский",
-          value: "female",
+          value: "Female",
+        },
+      ],
+      clientsType: [
+        {
+          label: "VIP",
+          value: "VIP",
+        },
+        {
+          label: "Проблемные",
+          value: "Problematic",
+        },
+        {
+          label: "ОМС",
+          value: "OMS",
         },
       ],
     };
   },
   validations: {
-    firstName: {
-      required,
-      minLength: minLength(4),
+    form: {
+      firstName: {
+        required,
+        minLength: minLength(3),
+      },
+      lastName: {
+        required,
+        minLength: minLength(3),
+      },
+      middleName: {
+        minLength: minLength(3),
+      },
+      date: {
+        required,
+        // between: between(20, 30),
+      },
+      telephone: {
+        required,
+        minLength: minLength(11),
+        // between: between(20, 30),
+      },
     },
-    lastName: {
-      required,
-      minLength: minLength(4),
-    },
-    middleName: {
-      required,
-      minLength: minLength(4),
-    },
-    date: {
-      required,
-      // between: between(20, 30),
-    },
-    telephone: {
-      required,
-      minLength: minLength(11),
-      // between: between(20, 30),
+  },
+  methods: {
+    checkForm() {
+      this.$v.form.$touch();
+      if (!this.$v.form.$error) {
+        console.log("Упешная валидаия");
+      }
     },
   },
 };
