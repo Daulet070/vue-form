@@ -2,7 +2,7 @@
   <div id="app">
     <form @submit.prevent="checkForm">
       <h1>Заполните форму</h1>
-      <p><i>*</i> Поле обязательное для заполнения.</p>
+      <p><i>*</i> - Поле обязательное для заполнения.</p>
       <div class="form-segments">
         <div class="segment">
           <h3>Ваши данные:</h3>
@@ -47,15 +47,15 @@
               Должно быть больше двух символов
             </div>
           </label>
-          <label :class="{ 'error-item': $v.form.date.$error }">
+          <label :class="{ 'error-item': $v.form.date.birthday.$error }">
             <span>Дата рождения<i>*</i></span>
             <input
               type="date"
               name="birthday"
-              v-model="form.date"
-              :class="{ 'name-error': $v.form.date.$error }"
+              v-model="form.date.birthday"
+              :class="{ 'name-error': $v.form.date.birthday.$error }"
             />
-            <div class="error" v-if="!$v.form.date.required">
+            <div class="error" v-if="!$v.form.date.birthday.required">
               Поле, обязательное для заполнения
             </div>
           </label>
@@ -92,7 +92,7 @@
               multiple
             >
               <option
-                v-for="(clientType, index) in form.clientsType"
+                v-for="(clientType, index) in clientsType"
                 :value="clientType.value"
                 :key="index"
               >
@@ -119,9 +119,17 @@
             <span>Область</span>
             <input type="text" name="region" />
           </label>
-          <label>
+          <label :class="{ 'error-item': $v.form.city.$error }">
             <span>Город<i>*</i></span>
-            <input type="text" name="city" />
+            <input
+              type="text"
+              name="city"
+              v-model="form.city"
+              :class="{ 'name-error': $v.form.city.$error }"
+            />
+            <div class="error" v-if="!$v.form.city.required">
+              Поле, обязательное для заполнения
+            </div>
           </label>
           <label>
             <span>Улица</span>
@@ -136,10 +144,18 @@
           <h3>Паспорт:</h3>
           <label>
             <span>Тип документа<i>*</i></span>
-            <select name="documents" id="documents">
-              <option value="passport">Паспорт</option>
-              <option value="birth-certificate">Свидетельство о рождении</option>
-              <option value="driving-licence">Вод. удостоверение</option>
+            <select
+              id="documents"
+              name="documents"
+              v-model="form.selectedDocumentsType"
+            >
+              <option
+                v-for="(document, index) in documents"
+                :value="document.value"
+                :key="index"
+              >
+                {{ document.label }}
+              </option>
             </select>
           </label>
           <label>
@@ -154,9 +170,18 @@
             <span>Кем выдан</span>
             <input type="text" name="passportSeries" />
           </label>
-          <label>
+          <label :class="{ 'error-item': $v.form.date.passportIssue.$error }">
             <span>Дата выдачи<i>*</i></span>
-            <input type="date" name="passportSeries" />
+            <input
+              id="issueDate"
+              name="issueDate"
+              type="date"
+              v-model="form.date.passportIssue"
+              :class="{ 'name-error': $v.form.date.passportIssue.$error }"
+            />
+            <div class="error" v-if="!$v.form.date.passportIssue.required">
+              Поле, обязательное для заполнения
+            </div>
           </label>
         </div>
       </div>
@@ -174,11 +199,23 @@ export default {
         firstName: "",
         lastName: "",
         middleName: "",
-        date: "",
-        telephone: 7,
+        date: {
+          birthday: "",
+          passportIssue: "",
+        },
+        telephone: "",
         gender: "Male",
         selectedClientsTypes: ["VIP"],
         agreeWithSentSMS: false,
+        postalCode: "",
+        country: "",
+        region: "",
+        city: "",
+        street: "",
+        home: "",
+        selectedDocumentsType: "passport",
+        passportSeries: "",
+        passportNumber: "",
       },
       genders: [
         {
@@ -188,6 +225,20 @@ export default {
         {
           label: "Женский",
           value: "Female",
+        },
+      ],
+      documents: [
+        {
+          label: "Паспорт",
+          value: "passport",
+        },
+        {
+          label: "Свидетельство о рождении",
+          value: "birth-certificate",
+        },
+        {
+          label: "Вод. удостоверение",
+          value: "driving-licence",
         },
       ],
       clientsType: [
@@ -220,13 +271,17 @@ export default {
         minLength: minLength(3),
       },
       date: {
-        required,
+        birthday: required,
+        passportIssue: required,
         // between: between(20, 30),
       },
       telephone: {
         required,
         minLength: minLength(11),
         // between: between(20, 30),
+      },
+      city: {
+        required,
       },
     },
   },
