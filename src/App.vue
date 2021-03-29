@@ -47,15 +47,15 @@
               Должно быть больше двух символов
             </div>
           </label>
-          <label :class="{ 'error-item': $v.form.date.birthday.$error }">
+          <label :class="{ 'error-item': $v.form.birthdayDate.$error }">
             <span>Дата рождения<i>*</i></span>
             <input
               type="date"
               name="birthday"
-              v-model="form.date.birthday"
-              :class="{ 'name-error': $v.form.date.birthday.$error }"
+              v-model="form.birthdayDate"
+              :class="{ 'name-error': $v.form.birthdayDate.$error }"
             />
-            <div class="error" v-if="!$v.form.date.birthday.required">
+            <div class="error" v-if="!$v.form.birthdayDate.required">
               Поле, обязательное для заполнения
             </div>
           </label>
@@ -170,16 +170,16 @@
             <span>Кем выдан</span>
             <input type="text" name="passportSeries" />
           </label>
-          <label :class="{ 'error-item': $v.form.date.passportIssue.$error }">
+          <label :class="{ 'error-item': $v.form.passportIssueDate.$error }">
             <span>Дата выдачи<i>*</i></span>
             <input
               id="issueDate"
               name="issueDate"
               type="date"
-              v-model="form.date.passportIssue"
-              :class="{ 'name-error': $v.form.date.passportIssue.$error }"
+              v-model="form.passportIssueDate"
+              :class="{ 'name-error': $v.form.passportIssueDate.$error }"
             />
-            <div class="error" v-if="!$v.form.date.passportIssue.required">
+            <div class="error" v-if="!$v.form.passportIssueDate.required">
               Поле, обязательное для заполнения
             </div>
           </label>
@@ -199,10 +199,7 @@ export default {
         firstName: "",
         lastName: "",
         middleName: "",
-        date: {
-          birthday: "",
-          passportIssue: "",
-        },
+        birthdayDate: "",
         telephone: "",
         gender: "Male",
         selectedClientsTypes: ["VIP"],
@@ -216,6 +213,7 @@ export default {
         selectedDocumentsType: "passport",
         passportSeries: "",
         passportNumber: "",
+        passportIssueDate: "",
       },
       genders: [
         {
@@ -270,10 +268,11 @@ export default {
       middleName: {
         minLength: minLength(3),
       },
-      date: {
-        birthday: required,
-        passportIssue: required,
-        // between: between(20, 30),
+      birthdayDate: {
+        required,
+      },
+      passportIssueDate: {
+        required,
       },
       telephone: {
         required,
