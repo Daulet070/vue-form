@@ -20,6 +20,9 @@
             <div class="error" v-if="!$v.form.lastName.minLength">
               Должно быть больше двух символов
             </div>
+            <div class="error" v-if="!$v.form.lastName.alphaRegex">
+              Допускаются только сиволы Аа-Зз Aa-Zz
+            </div>
           </label>
           <label :class="{ 'error-item': $v.form.firstName.$error }">
             <span>Имя<i>*</i></span>
@@ -35,6 +38,9 @@
             <div class="error" v-if="!$v.form.firstName.minLength">
               Должно быть больше двух символов
             </div>
+            <div class="error" v-if="!$v.form.firstName.alphaRegex">
+              Допускаются только сиволы Аа-Зз Aa-Zz
+            </div>
           </label>
           <label>
             <span>Отчество</span>
@@ -45,6 +51,12 @@
             />
             <div class="error" v-if="!$v.form.middleName.minLength">
               Должно быть больше двух символов
+            </div>
+            <div class="error" v-if="!$v.form.middleName.minLength">
+              Должно быть больше двух символов
+            </div>
+            <div class="error" v-if="!$v.form.middleName.alphaRegex">
+              Допускаются только сиволы Аа-Зз Aa-Zz
             </div>
           </label>
           <label :class="{ 'error-item': $v.form.birthdayDate.$error }">
@@ -69,6 +81,9 @@
             />
             <div class="error" v-if="!$v.form.telephone.required">
               Поле, обязательное для заполнения
+            </div>
+            <div class="error" v-if="!$v.form.telephone.numeric">
+              Допускаются только числа
             </div>
           </label>
           <label class="client-gender">
@@ -191,7 +206,16 @@
 </template>
 
 <script>
-import { required, minLength } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  numeric,
+  // alpha,
+  helpers,
+} from "vuelidate/lib/validators";
+
+const alphaRegex = helpers.regex("alpha", /^[a-zA-Zа-яА-ЯЁё]/u);
+
 export default {
   data() {
     return {
@@ -259,13 +283,16 @@ export default {
     form: {
       firstName: {
         required,
+        alphaRegex,
         minLength: minLength(3),
       },
       lastName: {
         required,
+        alphaRegex,
         minLength: minLength(3),
       },
       middleName: {
+        alphaRegex,
         minLength: minLength(3),
       },
       birthdayDate: {
@@ -276,6 +303,7 @@ export default {
       },
       telephone: {
         required,
+        numeric,
         minLength: minLength(11),
         // between: between(20, 30),
       },

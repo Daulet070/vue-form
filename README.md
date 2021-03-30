@@ -2,6 +2,8 @@
 
 ## Project setup
 ```
+git clone https://github.com/Daulet070/vue-form.git
+```
 npm install
 ```
 
