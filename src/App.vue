@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <form @submit.prevent="checkForm">
-      <h1>Заполните форму</h1>
+    <form ref="anyName" @submit.prevent="checkForm">
+      <h2>Заполните форму</h2>
       <p><i>*</i> - Поле обязательное для заполнения.</p>
-      <div class="form-segments">
+      <div class="form-group">
         <div class="segment">
           <h3>Ваши данные:</h3>
           <label :class="{ 'error-item': $v.form.lastName.$error }">
@@ -124,15 +124,15 @@
           <h3>Адрес:</h3>
           <label>
             <span>Индекс</span>
-            <input type="text" name="postcode" />
+            <input v-model="form.postalCode" type="text" name="postalCode" />
           </label>
           <label>
             <span>Страна</span>
-            <input type="text" name="country" />
+            <input v-model="form.country" type="text" name="country" />
           </label>
           <label>
             <span>Область</span>
-            <input type="text" name="region" />
+            <input v-model="form.region" type="text" name="region" />
           </label>
           <label :class="{ 'error-item': $v.form.city.$error }">
             <span>Город<i>*</i></span>
@@ -148,11 +148,11 @@
           </label>
           <label>
             <span>Улица</span>
-            <input type="text" name="street" />
+            <input v-model="form.street" type="text" name="street" />
           </label>
           <label>
             <span>Дом</span>
-            <input type="text" name="home" />
+            <input v-model="form.home" type="text" name="home" />
           </label>
         </div>
         <div class="segment">
@@ -175,15 +175,27 @@
           </label>
           <label>
             <span>Серия</span>
-            <input type="text" name="passportSeries" />
+            <input
+              v-model="form.passportSeries"
+              type="text"
+              name="passportSeries"
+            />
           </label>
           <label>
             <span>Номер</span>
-            <input type="text" name="passportNumber" />
+            <input
+              v-model="form.passportNumber"
+              type="text"
+              name="passportNumber"
+            />
           </label>
           <label>
             <span>Кем выдан</span>
-            <input type="text" name="passportSeries" />
+            <input
+              v-model="form.passportIssuedOrganization"
+              type="text"
+              name="passportSeries"
+            />
           </label>
           <label :class="{ 'error-item': $v.form.passportIssueDate.$error }">
             <span>Дата выдачи<i>*</i></span>
@@ -200,25 +212,36 @@
           </label>
         </div>
       </div>
-      <button class="red" type="submit">Отправить</button>
+      <button class="form-btn red" id="show-modal" type="submit">
+        Отправить
+      </button>
     </form>
+    <Modal v-model="modal" v-if="showModal">
+      <h3 slot="header">Новый клиент успешно создан!</h3>
+    </Modal>
   </div>
 </template>
 
 <script>
+import Modal from "./components/Modal";
+
 import {
   required,
   minLength,
   numeric,
-  // alpha,
   helpers,
 } from "vuelidate/lib/validators";
 
 const alphaRegex = helpers.regex("alpha", /^[a-zA-Zа-яА-ЯЁё]/u);
 
 export default {
+  components: {
+    Modal,
+  },
   data() {
     return {
+      modal: "",
+      showModal: false,
       form: {
         firstName: "",
         lastName: "",
@@ -237,6 +260,7 @@ export default {
         selectedDocumentsType: "passport",
         passportSeries: "",
         passportNumber: "",
+        passportIssuedOrganization: "",
         passportIssueDate: "",
       },
       genders: [
@@ -316,8 +340,20 @@ export default {
     checkForm() {
       this.$v.form.$touch();
       if (!this.$v.form.$error) {
-        console.log("Упешная валидаия");
+        this.showModal = true;
+        setTimeout(() => {
+          this.resetForm();
+          this.showModal = false;
+        }, 3000);
       }
+    },
+    resetForm() {
+      let self = this;
+
+      Object.keys(this.form).forEach(function (key) {
+        if (typeof self.form[key] === "string") self.form[key] = "";
+        else if (typeof self.form[key] === "boolean") self.form[key] = false;
+      });
     },
   },
 };
