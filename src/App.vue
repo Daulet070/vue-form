@@ -342,8 +342,8 @@ export default {
       if (!this.$v.form.$error) {
         this.showModal = true;
         setTimeout(() => {
-          this.resetForm();
           this.showModal = false;
+          this.resetForm();
         }, 3000);
       }
     },
