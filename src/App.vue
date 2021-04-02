@@ -74,8 +74,9 @@
           <label :class="{ 'error-item': $v.form.telephone.$error }">
             <span>Номер телефона<i>*</i></span>
             <input
-              type="text"
+              type="tel"
               name="telephone"
+              maxlength="18"
               v-model="form.telephone"
               :class="{ 'name-error': $v.form.telephone.$error }"
             />
